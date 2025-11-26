@@ -1,23 +1,21 @@
-// Apply the plugins that were defined in settings.gradle.kts
+// Apply the plugins. Note the change in Kotlin plugin syntax.
 plugins {
-    id("com.android.application") // Applies the Android App Plugin
-    id("org.jetbrains.kotlin.android") // Applies the Kotlin Android Plugin
+    id("com.android.application")
+    // Using the Kotlin DSL standard library function for the plugin ID
+    kotlin("android") 
 }
 
 // --- Android Specific Configuration ---
 android {
-    // REQUIRED: Specify the target SDK and minimum SDK versions
     namespace = "org.example.app"
     compileSdk = 34
 
     defaultConfig {
         applicationId = "org.example.app"
-        minSdk = 24 // Android 7.0 (Nougat) or later
+        minSdk = 24
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -27,7 +25,7 @@ android {
         }
     }
     
-    // Set Java/Kotlin compatibility to JDK 17, matching the GitHub Action setup
+    // Set compatibility to the latest version supported by Android 34/Gradle 9.2.0
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -39,15 +37,11 @@ android {
 
 // --- Dependencies ---
 dependencies {
-    // Standard UI libraries (for the MainActivity)
+    // Core Kotlin dependency
+    implementation(kotlin("stdlib"))
+    
+    // Standard Android UI libraries
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")
-
-    // The Kotlin standard library is often included implicitly but good practice to define
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.22")
-    
-    // Add the project dependency for your application logic
-    // We assume 'buildSrc' is meant for your utility code
-    // implementation(project(":buildSrc")) 
 }
