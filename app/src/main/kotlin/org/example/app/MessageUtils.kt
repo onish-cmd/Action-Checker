@@ -1,40 +1,52 @@
 package org.example.app
 
+import android.graphics.Color
+
 /**
- * Utility class for formatting messages based on the build status.
+ * Utility class for formatting messages and determining UI characteristics
+ * based on the build status for the Android application.
  */
 object MessageUtils {
 
-    // ANSI color codes for terminal output (for better visualization)
-    private const val ANSI_RESET = "\u001B[0m"
-    private const val ANSI_GREEN = "\u001B[32m"
-    private const val ANSI_RED = "\u001B[31m"
-    private const val ANSI_YELLOW = "\u001B[33m"
-    private const val ANSI_BLUE = "\u001B[34m"
-
     /**
-     * Creates a formatted message string indicating the build status.
+     * Gets the simple, un-styled status message string.
      *
      * @param status The BuildStatus to format.
      * @param repoOwner The repository owner.
      * @param repoName The repository name.
-     * @return A color-coded status message.
+     * @return A plain text status message.
      */
-    fun formatStatusMessage(status: BuildStatus, repoOwner: String, repoName: String): String {
+    fun getStatusText(status: BuildStatus, repoOwner: String, repoName: String): String {
         val repoPath = "$repoOwner/$repoName"
 
         return when (status) {
             BuildStatus.SUCCESS -> 
-                "${ANSI_GREEN}✅ SUCCESS${ANSI_RESET}: Actions for $repoPath are passing."
+                "✅ SUCCESS: Actions for $repoPath are passing."
             
             BuildStatus.FAILURE -> 
-                "${ANSI_RED}❌ FAILURE${ANSI_RESET}: Actions for $repoPath have failed! Investigate immediately."
+                "❌ FAILURE: Actions for $repoPath have failed! Investigate immediately."
             
             BuildStatus.PENDING -> 
-                "${ANSI_YELLOW}🟡 PENDING${ANSI_RESET}: Actions for $repoPath are currently running."
+                "🟡 PENDING: Actions for $repoPath are currently running."
             
             BuildStatus.UNKNOWN -> 
-                "${ANSI_BLUE}❓ UNKNOWN${ANSI_RESET}: Could not determine status for $repoPath. Check permissions or URL."
+                "❓ UNKNOWN: Could not determine status for $repoPath. Check permissions or URL."
+        }
+    }
+    
+    /**
+     * Gets the corresponding background color resource based on the build status.
+     * We use standard Android colors here.
+     *
+     * @param status The BuildStatus.
+     * @return An Android Color integer.
+     */
+    fun getStatusColor(status: BuildStatus): Int {
+        return when (status) {
+            BuildStatus.SUCCESS -> Color.parseColor("#4CAF50") // Green
+            BuildStatus.FAILURE -> Color.parseColor("#F44336") // Red
+            BuildStatus.PENDING -> Color.parseColor("#FFC107") // Amber
+            BuildStatus.UNKNOWN -> Color.parseColor("#2196F3") // Blue
         }
     }
 }
