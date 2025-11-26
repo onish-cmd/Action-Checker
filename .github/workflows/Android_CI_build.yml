@@ -1,0 +1,45 @@
+name: Android CI Build
+
+# Triggger the workflow on request.
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    # Use the latest Ubuntu runner environment
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Step 1: Checkout the source code
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # Step 2: Set up the Java environment
+      # Android projects typically require JDK 17 or higher
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'gradle' # Cache Gradle dependencies for faster subsequent builds
+
+      # Step 3: Grant execution permission to the Gradle wrapper
+      # This is crucial because file permissions are lost when checking out code
+      - name: Grant Execute Permission to gradlew
+        run: chmod +x gradlew
+
+      # Step 4: Run the Gradle build command
+      # This command performs a clean build, runs lint checks, and assembles the release APK/AAB.
+      # The 'app:assembleRelease' targets the 'app' module we've been working in.
+      - name: Assemble Release Build
+        run: ./gradlew clean app:assembleRelease --stacktrace
+        
+      # Optional Step 5: Upload the generated APK/AAB as an artifact
+      # This makes the compiled file available to download directly from the GitHub run summary.
+      - name: Upload Release Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-build
+          # Replace 'app-release.apk' with your actual output file name if it differs
+          path: app/build/outputs/apk/release/app-release-unsigned.apk
+          retention-days: 7
