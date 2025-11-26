@@ -1,61 +1,53 @@
-// This file defines the dependencies and configuration for your app module.
+// Apply the plugins that were defined in settings.gradle.kts
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.22" // For JSON serialization
+    id("com.android.application") // Applies the Android App Plugin
+    id("org.jetbrains.kotlin.android") // Applies the Kotlin Android Plugin
 }
 
+// --- Android Specific Configuration ---
 android {
+    // REQUIRED: Specify the target SDK and minimum SDK versions
     namespace = "org.example.app"
     compileSdk = 34
 
     defaultConfig {
         applicationId = "org.example.app"
-        minSdk = 26 // Min SDK for modern features like Notification Channels
+        minSdk = 24 // Android 7.0 (Nougat) or later
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    // Enable Jetpack Compose features
-    buildFeatures {
-        compose = true
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+        }
     }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.8"
-    }
-
+    
+    // Set Java/Kotlin compatibility to JDK 17, matching the GitHub Action setup
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
-
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
 }
 
+// --- Dependencies ---
 dependencies {
-    // --- Core Android & Compose ---
-    implementation("androidx.core:core-ktx:1.13.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
-    implementation("androidx.activity:activity-compose:1.9.0")
-    implementation(platform("androidx.compose:compose-bom:2024.05.00"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-graphics")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
+    // Standard UI libraries (for the MainActivity)
+    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.google.android.material:material:1.11.0")
 
-    // --- Background Tasks & Coroutines ---
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
-    implementation("androidx.lifecycle:lifecycle-service:2.7.0")
-
-    // --- Networking (Retrofit & Gson Converter) ---
-    // Retrofit is the standard library for making clean REST API calls in Android/Kotlin
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    // Kotlinx Serialization for JSON parsing (modern alternative to Gson)
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
-    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
+    // The Kotlin standard library is often included implicitly but good practice to define
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.22")
+    
+    // Add the project dependency for your application logic
+    // We assume 'buildSrc' is meant for your utility code
+    // implementation(project(":buildSrc")) 
 }
